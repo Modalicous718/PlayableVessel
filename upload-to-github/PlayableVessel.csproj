@@ -1,0 +1,95 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Build:  dotnet build -c Release -p:HKRoot="C:\path\to\Hollow Knight"
+    Or set HKRoot once in a Directory.Build.props next to this file (git-ignored), or in the
+    HOLLOW_KNIGHT_ROOT environment variable. The game's managed DLLs (with the Modding API
+    installed) are referenced from there; none of them are copied into the output.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <AssemblyName>PlayableVessel</AssemblyName>
+    <RootNamespace>PlayableVessel</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <Version>0.5.0</Version>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <HKRoot Condition="'$(HKRoot)' == ''">$(HOLLOW_KNIGHT_ROOT)</HKRoot>
+    <HKRoot Condition="'$(HKRoot)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Hollow Knight</HKRoot>
+    <Managed>$(HKRoot)\hollow_knight_Data\Managed</Managed>
+    <ModOut>$(Managed)\Mods\PlayableVessel</ModOut>
+    <!-- Copy the build into the game's Mods folder (turn off with -p:CopyToGame=false). -->
+    <CopyToGame Condition="'$(CopyToGame)' == ''">true</CopyToGame>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.3" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="$(Managed)\Assembly-CSharp.dll" Private="false" />
+    <Reference Include="$(Managed)\Assembly-CSharp-firstpass.dll" Private="false" />
+    <Reference Include="$(Managed)\PlayMaker.dll" Private="false" />
+    <Reference Include="$(Managed)\MMHOOK_Assembly-CSharp.dll" Private="false" />
+    <Reference Include="$(Managed)\MMHOOK_PlayMaker.dll" Private="false" />
+    <Reference Include="$(Managed)\MonoMod.RuntimeDetour.dll" Private="false" />
+    <Reference Include="$(Managed)\MonoMod.Utils.dll" Private="false" />
+    <Reference Include="$(Managed)\Newtonsoft.Json.dll" Private="false" />
+    <Reference Include="$(Managed)\UnityEngine.dll" Private="false" />
+    <Reference Include="$(Managed)\UnityEngine.CoreModule.dll" Private="false" />
+    <Reference Include="$(Managed)\UnityEngine.Physics2DModule.dll" Private="false" />
+    <Reference Include="$(Managed)\UnityEngine.AudioModule.dll" Private="false" />
+    <Reference Include="$(Managed)\UnityEngine.AssetBundleModule.dll" Private="false" />
+    <Reference Include="$(Managed)\UnityEngine.TextRenderingModule.dll" Private="false" />
+    <Reference Include="$(Managed)\UnityEngine.InputLegacyModule.dll" Private="false" />
+    <Reference Include="$(Managed)\UnityEngine.ParticleSystemModule.dll" Private="false" />
+    <Reference Include="$(Managed)\UnityEngine.AnimationModule.dll" Private="false" />
+    <Reference Include="$(Managed)\UnityEngine.IMGUIModule.dll" Private="false" />
+    <Reference Include="$(Managed)\UnityEngine.ImageConversionModule.dll" Private="false" />
+    <Reference Include="$(Managed)\netstandard.dll" Private="false" />
+  </ItemGroup>
+
+  <!-- Keep the offline preview tool (tools/) out of the mod build. -->
+  <ItemGroup>
+    <Compile Remove="tools\**" />
+  </ItemGroup>
+
+  <Target Name="CopyToMods" AfterTargets="Build" Condition="'$(CopyToGame)' == 'true' And Exists('$(Managed)')">
+    <MakeDir Directories="$(ModOut)" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModOut)" />
+    <Copy SourceFiles="$(TargetDir)$(TargetName).pdb" DestinationFolder="$(ModOut)" Condition="Exists('$(TargetDir)$(TargetName).pdb')" />
+  </Target>
+
+  <!-- dotnet build -c Release -t:Package  →  dist\PlayableVessel.zip (what Lumafly / ModLinks download). -->
+  <Target Name="Package" DependsOnTargets="Build">
+    <PropertyGroup>
+      <PackDir>$(MSBuildProjectDirectory)\dist\pack</PackDir>
+      <ZipPath>$(MSBuildProjectDirectory)\dist\PlayableVessel.zip</ZipPath>
+    </PropertyGroup>
+    <RemoveDir Directories="$(PackDir)" />
+    <MakeDir Directories="$(PackDir)" />
+    <Copy SourceFiles="$(TargetPath);$(MSBuildProjectDirectory)\README.md;$(MSBuildProjectDirectory)\LICENSE" DestinationFolder="$(PackDir)" />
+    <Delete Files="$(ZipPath)" />
+    <ZipDirectory SourceDirectory="$(PackDir)" DestinationFile="$(ZipPath)" />
+    <GetFileHash Files="$(ZipPath)" Algorithm="SHA256">
+      <Output TaskParameter="Hash" PropertyName="ZipHash" />
+    </GetFileHash>
+    <WriteLinesToFile File="$(MSBuildProjectDirectory)\dist\SHA256.txt" Lines="$(ZipHash)" Overwrite="true" />
+    <Message Importance="high" Text="Packaged $(ZipPath)  SHA256=$(ZipHash)" />
+
+    <!-- Manual-install zip: a ready "PlayableVessel" folder to drop into Mods, plus INSTALL.txt. -->
+    <PropertyGroup>
+      <ManualDir>$(MSBuildProjectDirectory)\dist\manual</ManualDir>
+      <ManualZip>$(MSBuildProjectDirectory)\dist\PlayableVessel-$(Version)-manual-install.zip</ManualZip>
+    </PropertyGroup>
+    <RemoveDir Directories="$(ManualDir)" />
+    <MakeDir Directories="$(ManualDir)\PlayableVessel" />
+    <Copy SourceFiles="$(TargetPath);$(MSBuildProjectDirectory)\README.md;$(MSBuildProjectDirectory)\LICENSE" DestinationFolder="$(ManualDir)\PlayableVessel" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\INSTALL.txt" DestinationFolder="$(ManualDir)" />
+    <Delete Files="$(ManualZip)" />
+    <ZipDirectory SourceDirectory="$(ManualDir)" DestinationFile="$(ManualZip)" />
+    <Message Importance="high" Text="Packaged $(ManualZip)" />
+  </Target>
+
+</Project>

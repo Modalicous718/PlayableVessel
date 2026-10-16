@@ -1,0 +1,30 @@
+PLAYABLE VESSEL — manual install
+================================
+
+Needs: Hollow Knight 1.5.78 (current Steam / GOG version) with the Hollow Knight Modding API.
+(If you use Lumafly, install from Lumafly instead; it does all of this for you.)
+
+1. Install the Modding API (skip if you already have mods working)
+   - Download it from https://github.com/hk-modding/api/releases (the "ModdingApiWin.zip" asset).
+   - Open your game folder:
+       Steam: right-click Hollow Knight > Manage > Browse local files
+       GOG:   Galaxy > Hollow Knight > Manage installation > Show folder
+   - Copy everything from that zip into the game folder, overwriting files when asked.
+
+2. Install Playable Vessel
+   - Open  Hollow Knight\hollow_knight_Data\Managed\
+   - If there is no "Mods" folder there, create one.
+   - Copy the "PlayableVessel" folder from this zip into the Mods folder, so you end up with:
+       Hollow Knight\hollow_knight_Data\Managed\Mods\PlayableVessel\PlayableVessel.dll
+
+3. Start the game
+   - The first start takes a little longer (the mod loads two boss scenes).
+   - In the main menu: Options > Mods > Playable Vessel to choose the vessel and other options.
+
+Update:    replace the PlayableVessel folder with the new one.
+Uninstall: delete the Mods\PlayableVessel folder.
+           (To remove the Modding API too: Steam > Hollow Knight > Properties > Installed Files >
+            Verify integrity of game files.)
+
+Problems? Send the mod's log:
+  Hollow Knight\hollow_knight_Data\Managed\Mods\PlayableVessel\logs\PlayableVessel.log

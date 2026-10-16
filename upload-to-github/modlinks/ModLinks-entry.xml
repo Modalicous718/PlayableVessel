@@ -1,0 +1,23 @@
+<!--
+  Entry for hk-modding/modlinks (ModLinks.xml), which is what Lumafly installs from.
+  Replace GITHUB_USER, attach dist/PlayableVessel.zip to a GitHub release tagged v0.5.0,
+  and make sure SHA256 matches dist/SHA256.txt for the exact zip you uploaded.
+-->
+<Manifest>
+    <Name>PlayableVessel</Name>
+    <Description>Play as the Hollow Knight (Sealed Vessel) or Pure Vessel, with their boss move sets, animations and effects, plus a Silksong-style taunt, bench and talk poses, and a music player.</Description>
+    <Version>0.5.0.0</Version>
+    <Link SHA256="13960343275E85747E9AB8BFB3B8C8F73F46F37DFD56304B6683ED510A4B09A4"><![CDATA[https://github.com/GITHUB_USER/PlayableVessel/releases/download/v0.5.0/PlayableVessel.zip]]></Link>
+    <Dependencies />
+    <Repository><![CDATA[https://github.com/GITHUB_USER/PlayableVessel]]></Repository>
+    <Issues><![CDATA[https://github.com/GITHUB_USER/PlayableVessel/issues]]></Issues>
+    <Tags>
+        <Tag>Gameplay</Tag>
+        <Tag>Cosmetic</Tag>
+        <Tag>Boss</Tag>
+        <Tag>LLM-Assisted</Tag>
+    </Tags>
+    <Authors>
+        <Author>GITHUB_USER</Author>
+    </Authors>
+</Manifest>
